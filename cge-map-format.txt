@@ -1,0 +1,53 @@
+CGE Map Format (CMF)
+
+Extension: .cmdf (Cge Map Directory File)
+
+Structure:
+
+   4 Bytes (INT)
+|<--------------->|
++-----------------+
+| 'C' 'M' 'D' 'F' |
++-----------------+
+| Map Directory   |
+| header          |
++-----------------+
+| Map header 1    |
++-----------------+
+| Chunk header    |
++-----------------+
+| Chunk contents  |
++-----------------+
+| Map header 2..  |
++-----------------+
+| Chunk header 3..|
++-----------------+
+| Chunk contents  |
++-----------------+
+
+Map Directory header:
+4 characters C M D F
+4 bytes next Map header
+32 bytes reserved space
+
+Map header:
+4 bytes next map header
+4 bytes 1st tileset header
+4 bytes 1st chunk header 
+char* Mapname + \0
+32 bytes reserved space
+
+Chunk header:
+4 bytes next chunk header
+4 bytes tileset link
+32 * 32 * 2 bytes tile data
+32 bytes reserved space
+
+Tileset header:
+4 bytes next tileset header
+4 bytes next tile header
+32 bytes reserved space
+
+Tile header:
+4 bytes next tile header
+4 bytes Spritesheet name 
