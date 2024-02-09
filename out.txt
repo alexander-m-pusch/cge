@@ -1,0 +1,8 @@
+cc -fPIC -shared -Iengine/include -Icglm/include -lGLEW -lGL -lglfw -Wall -Wpedantic -DBUILD=CGE_DEBUG -DCGE_VERSION_MAJOR=0 -DCGE_VERSION_MINOR=1 -DCGE_VERSION_PATCH=0 engine/3drenderer.c engine/batchrenderer.c engine/gui.c engine/map.c engine/mesh.c engine/misc.c engine/shader.c engine/spritesheet.c engine/texture.c engine/window.c -o build/libCGE.so
+engine/gui.c:3: Warnung: ISO-C verbietet eine leere Quelldatei [-Wpedantic]
+cc -Igame/include -Iengine/include -Icglm/include -Lbuild -lGLEW -lGL -lglfw -lCGE -Wall -Wpedantic -Wl,-rpath='$ORIGIN' game/main.c -o build/game
+build/game
+GLFW Window created successfully.
+This is a DEBUG build. Expect your log to get spammed and general weirdness, this is not release.
+Using CGE Version 0.1.0
+Shader successfully compiled.

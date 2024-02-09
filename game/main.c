@@ -106,7 +106,7 @@ int main(void) {
 	float camX = 0.0f;
 	float camY = 0.0f;
 	float camZ = 25.0f;
-	float camAngle = 90.0f;
+	float camAngle = 70.0f;
 
 	while(glfwWindowShouldClose(window) == 0) {
 		glfwPollEvents();
@@ -128,12 +128,14 @@ int main(void) {
 			camX = camX + 0.2f;
 		}
 		if(f5_pushed) {
+
+			/*
 			camZ = 25.0f;
 			camAngle = camAngle - 10.0f;
 			if(camAngle <= 10.0f) {
 				camAngle = 90.0f;
 			}
-			f5_pushed = 0;
+			f5_pushed = 0; */	
 		}
 
 		cgeWindowCamera(camX, camY, camZ, camAngle, cameraMatrix);

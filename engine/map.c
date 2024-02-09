@@ -6,14 +6,16 @@
 #include <string.h>
 
 struct cgeMapDirectory* cgeLoadMapDirectory(char* filepath) {
-	FILE* mapDirectoryFile = fopen(filename, "rb");
+	FILE* mapDirectoryFile = fopen(filepath, "rb");
+	
 	
 
-	fclose(mapDirectoryFile);
 	return NULL; //TODO actually implement this thing here
 }
 
 void cgeSaveMapDirectory(struct cgeMapDirectory* directory, char* filepath) {
+
+	fclose(directory->mapFile);
 	return; //TODO actually implement this thing here uwu
 }
 
@@ -25,6 +27,8 @@ void cgeUnloadMapDirectory(struct cgeMapDirectory* directory) {
 			}
 		}
 	}
+
+	fclose(cgeMapDirectory->mapFile);
 	free(directory);
 }
 

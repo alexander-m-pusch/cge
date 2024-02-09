@@ -2,43 +2,48 @@
 #define MAP_H_
 
 #include <cge/mesh.h>
+#include <cge/texture.h>
+#include <stdio.h>
 
 #define FLAG_WALKABLE 0x0001
 #define FLAG_INDOORS 0x0002
 
 struct cgeMapTile { //make sure to create with calloc
-	unsigned short tileName;
-	struct cge3DMesh* mesh;
+	unsigned short UUID;
 	unsigned short flags;
 };
 
 struct cgeTileSet {
-	unsigned int tileCount;
-	struct cgeMapTile** tiles;
-}
+	unsigned short tileCount;
+	struct cgeTexture* texture;
+	struct cgeMapTile* tiles;
+};
 
-//chunk size in tiles: 32 * 32 * 2 = 2KiB of tile Names
+//chunk size in tiles: 32 * 32 * 2 = 2KiB of tile names
 struct cgeMapChunk {
 	unsigned short* tiles; //Format: tiles[tileX * 32 + tileY] = tileType; so we must rangecheck tileX, tileY < 32
-	unsigned short tileset; //Which tileset this mapchunk uses
+	struct cge3DMesh* mesh; //pre-baked while loading
 	short chunkPosX, chunkPosY, chunkPosZ; //chunk position in chunk space
-	short playerPosX, playerPosY, playerPosZ; //player position in intra-chunk coords, playerPos = inter-chunk coord * 32 + intra-chunk coord
+};
+
+struct cgeMapProperties {
+	struct cgeTileSet* tileSet;
+	char* displayName;
+	char* scriptFile;
 };
 
 //map size in chunks: 256 * 256 * 256 = 24bits of position data
 struct cgeMap {
-	char* name;
+	struct cgeMapDirectory* direcory;
+	char* internalName;
 	unsigned int chunkCount;
-	unsigned int tilesetCount
-	struct cgeMapChunk** chunks;
-	struct cgeTileSet** tileSets;
-	short playerPosX, playerPosY, playerPosZ; //player position in inter-chunk coords
-};	
+	short playerPosX, playerPosY, playerPosZ; //player position in inter-chunk coords, chunk size 32 tiles
+};
 
 struct cgeMapDirectory {
+	FILE* mapFile;
 	short mapCount;
 	char* openMap;
-	struct cgeMap** maps;
 };
 
 static inline int getPlayerPosX(struct cgeMap* map, struct cgeMapChunk* chunk) {

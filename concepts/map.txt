@@ -1,0 +1,60 @@
+CGE Map Directory Format (CMDF)
+
+################ Magic number
+'C' 'M' 'D' 'F' 
+
+################ Map directory header
+char version
+char[16] file title
+char[16] file author
+
+################ Player data header
+char currMapNameLength
+char[] currMapName
+int playerPosX
+int playerPosY
+int playerPosZ
+
+################ Map Header
+char nameLength
+char[] name
+unsigned int propertyHeaderOffset
+unsigned int firstChunkHeader
+unsigned int nextMapHeader
+
+################ Map Property Header
+char displayNameLength
+char[] displayName
+char scriptFileLength
+char[] scriptFilePath
+unsigned int tileSetHeader
+unsigned int expansionHeader //juuuust to keep this future-proof
+
+################ Tileset header
+char texfilenameLength
+char* textureFilePath
+unsigned int nextTileHeader
+
+################ Tile object
+char tileObjNameLength
+char* tileObjPath
+unsigned short objID
+unsigned int nextTileObject
+
+################ Tile
+unsigned short objID
+unsigned short UUID //for use in scripting
+short flags
+unsigned int nextTile
+
+################ Chunk header
+short chunkCoordX
+short chunkCoordY
+short chunkCoordZ
+unsigned int chunkHeaderPlusX
+unsigned int chunkHeaderMinusX
+unsigned int chunkHeaderPlusY
+unsigned int chunkHeaderMinusY
+unsigned int chunkHeaderPlusZ
+unsigned int chunkHeaderMinusZ
+short[32768] tiles

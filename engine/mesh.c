@@ -38,7 +38,6 @@ struct cge3DMesh* cgeLoadObj(char* modelPath, char* texturePath) {
 	float* vertices = calloc(vc, sizeof(float));
 	unsigned int* indices = calloc(ic, sizeof(unsigned int));
 
-	unsigned int sanity_counter = 0;
 	for(int i = 0; i < ic; i++) {
 		unsigned int pos = mesh_raw->indices[i].p;
 		indices[i] = pos;
@@ -47,18 +46,19 @@ struct cge3DMesh* cgeLoadObj(char* modelPath, char* texturePath) {
 			vertices[pos * 8 + 1] = mesh_raw->positions[pos * 3 + 1];
 			vertices[pos * 8 + 2] = mesh_raw->positions[pos * 3 + 2];
 		}
+
 		unsigned int norm = mesh_raw->indices[i].n;
 		if(mesh_raw->normal_count * 3 >= norm) {
 			vertices[pos * 8 + 3] = mesh_raw->normals[norm * 3];
 			vertices[pos * 8 + 4] = mesh_raw->normals[norm * 3 + 1];
 			vertices[pos * 8 + 5] = mesh_raw->normals[norm * 3 + 2];
 		}
+
 		unsigned int tex = mesh_raw->indices[i].t;
 		if(mesh_raw->texcoord_count * 2 >= tex) {
 			vertices[pos * 8 + 6] = mesh_raw->texcoords[tex * 2];
 			vertices[pos * 8 + 7] = mesh_raw->texcoords[tex * 2 + 1];
 		}
-		sanity_counter = sanity_counter + 8;
 	}
 
 	fast_obj_destroy(mesh_raw);
