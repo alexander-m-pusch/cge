@@ -3,5 +3,6 @@
 
 void cgeCrash(char* text);
 char* cgeVersion();
+char* cgeBuild();
 
 #endif

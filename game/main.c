@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <cge/map.h>
 #include <cge/window.h>
 #include <cge/shader.h>
 #include <cge/renderbatch.h>
@@ -60,20 +61,54 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 }
 
-int main(void) {
-	GLFWwindow* window = cgeCreateWindow("Deine Mudda");
+void testMapFeature() {
+	printf("Testing map features\n");
+	struct cgeMapDirectory* dir = cgeLoadMapDirectory("map.cmdf");
+	if(dir == NULL) {
+		printf("Map directory could not be loaded!\n");
+		cgeCrash("Could not load map directory.\n");
+	}
+
+	/*
+	struct cgeTileSet* tileset = malloc(sizeof(struct cgeTileSet));
+
+	struct cgeTexture* texture = cgeLoadTexture("build/spritesheet.png");
+	tileset->texture = texture;
+	tileset->tileCount = 1;
+	tileset->tiles = malloc(sizeof(struct cgeMapTile));
+	tileset->tiles[0].UUID = 42069;
+	tileset->tiles[0].flags = CGE_TILE_FLAG_WALKABLE;
+	tileset->tiles[0].u = 0.0f;
+	tileset->tiles[0].v = 0.0f;
+
+	struct cgeMapProperties* prop = cgeCreateMapPropertiesFromScratch(tileset, "Deine Mudda", "");
+	struct cgeMap* map = cgeCreateMapFromScratch(prop, dir, "testMap");
+
+	cgePlaceMap(dir, map);
+	*/
+	struct cgeMap* map = cgeLoadMapByName(dir, "testMap");
+
+	//struct cgeMapChunk* newChunk = cgeCreateMapChunkFromScratch(0, 0, 0);
+	//cgePlaceMapChunk(map, newChunk);
 	
+	struct cgeMapChunk* chunk = cgeGetMapChunk(map, 0, 0, 0);
+
+	printf("%p\n", (void*) chunk);
+}
+
+int main(void) {
+	printf("Using CGE Version %s\n", cgeVersion());
+	printf("CGE Build: %s\n", cgeBuild());
+
+	//testMapFeature();
+
+	GLFWwindow* window = cgeCreateWindow("Deine Mudda");
+
 	glfwSetKeyCallback(window, key_callback);
 
 	struct cgeShader* shader = cgeCreateShader();	
 	int vs = cgeAttachShaderFromFile(shader, "build/vertex.glsl", GL_VERTEX_SHADER);
 	int fs = cgeAttachShaderFromFile(shader, "build/fragment.glsl", GL_FRAGMENT_SHADER);
-
-#if(BUILD == CGE_DEBUG)
-	printf("This is a DEBUG build. Expect your log to get spammed and general weirdness, this is not release.\n");
-#endif
-
-	printf("Using CGE Version %s\n", cgeVersion());
 
 	if((vs + fs) != 0) {
 		cgeCrash("Could not load shaders.\n");
@@ -86,6 +121,8 @@ int main(void) {
 	}
 
 	printf("Shader successfully compiled.\n");
+
+	testMapFeature();
 
 	mat4 cameraMatrix;
 	mat4 perspMatrix;
@@ -128,14 +165,12 @@ int main(void) {
 			camX = camX + 0.2f;
 		}
 		if(f5_pushed) {
-
-			/*
 			camZ = 25.0f;
 			camAngle = camAngle - 10.0f;
 			if(camAngle <= 10.0f) {
 				camAngle = 90.0f;
 			}
-			f5_pushed = 0; */	
+			f5_pushed = 0;	
 		}
 
 		cgeWindowCamera(camX, camY, camZ, camAngle, cameraMatrix);

@@ -35,6 +35,7 @@ struct cgeTexture* cgeLoadTexture(char* path) {
 	returnTexture->width = width;
 	returnTexture->height = height;
 	returnTexture->channelCount = channelCount;
+	returnTexture->filename = path;
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 

@@ -1,6 +1,6 @@
 CGE Map Format (CMF)
 
-Extension: .cmdf (Cge Map Directory File)
+Extension: .cmf (Cge Map File)
 
 Structure:
 
@@ -8,12 +8,12 @@ Structure:
 |<--------------->|
 +-----------------+
 | 'C' 'M' 'D' 'F' |
-+-----------------+
++-----------------+ 4
 | Map Directory   |
 | header          |
-+-----------------+
++-----------------+ 44
 | Map header 1    |
-+-----------------+
++-----------------+ 
 | Chunk header    |
 +-----------------+
 | Chunk contents  |
@@ -24,30 +24,55 @@ Structure:
 +-----------------+
 | Chunk contents  |
 +-----------------+
+| Tileset header  |
++-----------------+
+| Tile header 1.. |
++-----------------+
 
 Map Directory header:
-4 characters C M D F
-4 bytes next Map header
-32 bytes reserved space
+0	4 characters C M D F
+4 	4 bytes first Map header //file traversing
+8	32 bytes reserved space
 
 Map header:
-4 bytes next map header
-4 bytes 1st tileset header
-4 bytes 1st chunk header 
-char* Mapname + \0
-32 bytes reserved space
+0	4 bytes prev map header //file traversing
+4	4 bytes next map header //file traversing
+8	4 bytes map properties header
+12	4 bytes origin chunk header //file traversing
+16	4 bytes mapname length
+20	16 bytes reserved space
+36	char* Mapname
+
 
 Chunk header:
-4 bytes next chunk header
-4 bytes tileset link
-32 * 32 * 2 bytes tile data
-32 bytes reserved space
+0	8 bytes einschiss
+8	4 bytes prev chunk header //file traversing
+12	4 bytes next chunk header //file traversing
+16	4 bytes chunk header east //chunk loading
+20	4 bytes chunk header west //chunk loading
+24	4 bytes chunk header north //chunk loading
+28	4 bytes chunk header south //chunk loading
+32	4 bytes chunk header up //chunk loading
+36	4 bytes chunk header down //chunk loading
+40	4 bytes chunk posX
+44	4 bytes chunk posY
+48	4 bytes chunk posZ
+52	4 bytes tileset link UNUSED
+56	16 bytes reserved data
+88	32 * 32 * 2 bytes tile data
 
-Tileset header:
-4 bytes next tileset header
-4 bytes next tile header
-32 bytes reserved space
+Map properties header:
+0	4 bytes prev tile header //file traversing
+4	4 bytes next tile header //file traversing
+8	4 bytes scriptfile string length
+12	4 bytes texture file string length
+16	16 bytes reserved space
+32	char* scriptfile
+32 + n	char* texturefile
 
 Tile header:
-4 bytes next tile header
-4 bytes Spritesheet name 
+0	4 bytes next tile header //file traversing
+4	4 bytes UUID
+8	4 bytes flags
+12	4 bytes u [FLOAT]
+16	4 bytes v [FLOAT]
