@@ -11,6 +11,13 @@
 #define CGE_TILE_FLAG_INDOORS 0x0002
 #define CGE_TILE_FLAG_DEADLY 0x0004
 
+#define CGE_NORTH 0
+#define CGE_SOUTH 1
+#define CGE_WEST 2
+#define CGE_EAST 3
+#define CGE_UP 4
+#define CGE_DOWN 5
+
 struct cgeMapTile { //make sure to create with calloc
 	unsigned short UUID;
 	unsigned short flags;
@@ -75,10 +82,10 @@ void cgeUnloadMapDirectory(struct cgeMapDirectory* directory);
 struct cgeMap* cgeLoadMapByName(struct cgeMapDirectory* directory, char* name);
 void cgePlaceMap(struct cgeMapDirectory* directory, struct cgeMap* map);
 void cgeUnloadMap(struct cgeMap* map);
-struct cgeMapChunk* cgeGetNeighbourChunk(struct cgeMapChunk* chunk, short dx, short dy, short dz);
-struct cgeMapChunk* cgeGetMapChunk(struct cgeMap* map, short x, short y, short z);
+struct cgeMapChunk* cgeGetNeighbourChunk(struct cgeMapChunk* chunk, short direction);
+struct cgeMapChunk* cgeGetMapChunk(struct cgeMap* map, short x, short y, short z, int load);
 void cgePlaceMapChunk(struct cgeMap* map, struct cgeMapChunk* chunk);
-void cgeUnloadMapChunk(struct cgeMapChunk* chunk);
+void cgeUnloadMapChunk(struct cgeMapChunk* chunk, int load);
 struct cgeMapProperties* cgeCreateMapPropertiesFromScratch(struct cgeTileSet* tileset, char* displayName, char* scriptFile);
 struct cgeMap* cgeCreateMapFromScratch(struct cgeMapProperties* properties, struct cgeMapDirectory* directory, char* internalName);
 struct cgeMapChunk* cgeCreateMapChunkFromScratch(short x, short y, short z);

@@ -58,7 +58,7 @@ struct cgeMapDirectory* cgeLoadMapDirectory(char* filepath) {
 
 	if(strncmp(CGE_MAGICNUM, checknum, 4) == 0) {
 #ifdef CGE_DEBUG
-		printf("DEBUG: CGE Map Directory File checksum valid!\n");
+		printf("DEBUG: CGE Map Directory File Header valid!\n");
 #endif
 		//now, we iterate over the map headers to make a table
 
@@ -293,18 +293,17 @@ void cgeUnloadMap(struct cgeMap* map) {
 	free(map);
 }
 
-struct cgeMapChunk* cgeGetNeighbourChunk(struct cgeMapChunk* chunk, short dx, short dy, short dz) {
+struct cgeMapChunk* cgeGetNeighbourChunk(struct cgeMapChunk* chunk, short direction) {
 	return NULL;
 }
 
-struct cgeMapChunk* cgeGetMapChunk(struct cgeMap* map, short x, short y, short z) {
+struct cgeMapChunk* cgeGetMapChunk(struct cgeMap* map, short x, short y, short z, int load) {
 #ifdef CGE_DEBUG
 	printf("Loading chunk at (%d|%d|%d)\n", x, y, z);
 #endif
 	fseek(map->directory->mapFile, map->fileaddr + 12, SEEK_SET);
 	unsigned int originChunkAddr = 0;
 	fread(&originChunkAddr, sizeof(unsigned int), 1, map->directory->mapFile);
-	printf("%d\n", originChunkAddr);
 	while(originChunkAddr) {
 		unsigned int chunkCoords[3];
 		fseek(map->directory->mapFile, originChunkAddr + 40, SEEK_SET);
@@ -327,8 +326,11 @@ struct cgeMapChunk* cgeGetMapChunk(struct cgeMap* map, short x, short y, short z
 			fseek(map->directory->mapFile, originChunkAddr + 88, SEEK_SET);
 			fread(chunk->tiles, sizeof(unsigned short), 32 * 32, map->directory->mapFile);
 
-			//TODO execute chunk loading script
-
+			if(load) {
+				//TODO execute chunk loading script
+				//TODO map loading
+			}
+			
 			return chunk;
 		}
 
@@ -384,67 +386,77 @@ void cgePlaceMapChunk(struct cgeMap* map, struct cgeMapChunk* chunk) {
 		fwrite(&chunkaddr, sizeof(unsigned int), 1, map->directory->mapFile);
 	}
 
-	struct cgeMapChunk* chunk_e = cgeGetMapChunk(map, chunk->chunkPosX + 1, chunk->chunkPosY, chunk->chunkPosZ);
+	struct cgeMapChunk* chunk_e = cgeGetMapChunk(map, chunk->chunkPosX + 1, chunk->chunkPosY, chunk->chunkPosZ, 0);
+	
 	if(chunk_e) {
 		fseek(map->directory->mapFile, chunk_e->fileaddr + 20, SEEK_SET);
 		unsigned int e_addr = (unsigned int) ftell(map->directory->mapFile);
 		fwrite(&chunkaddr, sizeof(unsigned int), 1, map->directory->mapFile);
 		fseek(map->directory->mapFile, chunkaddr + 16, SEEK_SET);
 		fwrite(&e_addr, sizeof(unsigned int), 1, map->directory->mapFile);
-		cgeUnloadMapChunk(chunk_e);
+		cgeUnloadMapChunk(chunk_e, 0);
 	}
-	struct cgeMapChunk* chunk_w = cgeGetMapChunk(map, chunk->chunkPosX - 1, chunk->chunkPosY, chunk->chunkPosZ);
+
+	struct cgeMapChunk* chunk_w = cgeGetMapChunk(map, chunk->chunkPosX - 1, chunk->chunkPosY, chunk->chunkPosZ, 0);
+	
 	if(chunk_w) {
-		fseek(map->directory->mapFile, chunk_e->fileaddr + 16, SEEK_SET);
+		fseek(map->directory->mapFile, chunk_w->fileaddr + 16, SEEK_SET);
 		unsigned int w_addr = (unsigned int) ftell(map->directory->mapFile);
 		fwrite(&chunkaddr, sizeof(unsigned int), 1, map->directory->mapFile);
 		fseek(map->directory->mapFile, chunkaddr + 20, SEEK_SET);
 		fwrite(&w_addr, sizeof(unsigned int), 1, map->directory->mapFile);
-		cgeUnloadMapChunk(chunk_w);
+		cgeUnloadMapChunk(chunk_w, 0);
 	}
-	struct cgeMapChunk* chunk_n = cgeGetMapChunk(map, chunk->chunkPosX, chunk->chunkPosY + 1, chunk->chunkPosZ);
+	struct cgeMapChunk* chunk_n = cgeGetMapChunk(map, chunk->chunkPosX, chunk->chunkPosY + 1, chunk->chunkPosZ, 0);
+	
 	if(chunk_n) {
-		fseek(map->directory->mapFile, chunk_e->fileaddr + 28, SEEK_SET);
+		fseek(map->directory->mapFile, chunk_n->fileaddr + 28, SEEK_SET);
 		unsigned int n_addr = (unsigned int) ftell(map->directory->mapFile);
 		fwrite(&chunkaddr, sizeof(unsigned int), 1, map->directory->mapFile);
 		fseek(map->directory->mapFile, chunkaddr + 24, SEEK_SET);
 		fwrite(&n_addr, sizeof(unsigned int), 1, map->directory->mapFile);
-		cgeUnloadMapChunk(chunk_n);
+		cgeUnloadMapChunk(chunk_n, 0);
 	}
-	struct cgeMapChunk* chunk_s = cgeGetMapChunk(map, chunk->chunkPosX, chunk->chunkPosY - 1, chunk->chunkPosZ);
+	struct cgeMapChunk* chunk_s = cgeGetMapChunk(map, chunk->chunkPosX, chunk->chunkPosY - 1, chunk->chunkPosZ, 0);
+	
 	if(chunk_s) {
-		fseek(map->directory->mapFile, chunk_e->fileaddr + 24, SEEK_SET);
+		fseek(map->directory->mapFile, chunk_s->fileaddr + 24, SEEK_SET);
 		unsigned int s_addr = (unsigned int) ftell(map->directory->mapFile);
 		fwrite(&chunkaddr, sizeof(unsigned int), 1, map->directory->mapFile);
 		fseek(map->directory->mapFile, chunkaddr + 28, SEEK_SET);
 		fwrite(&s_addr, sizeof(unsigned int), 1, map->directory->mapFile);
-		cgeUnloadMapChunk(chunk_s);
+		cgeUnloadMapChunk(chunk_s, 0);
 	}
-	struct cgeMapChunk* chunk_u = cgeGetMapChunk(map, chunk->chunkPosX, chunk->chunkPosY, chunk->chunkPosZ + 1);
+	struct cgeMapChunk* chunk_u = cgeGetMapChunk(map, chunk->chunkPosX, chunk->chunkPosY, chunk->chunkPosZ + 1, 0);
+	
 	if(chunk_u) {
-		fseek(map->directory->mapFile, chunk_e->fileaddr + 36, SEEK_SET);
+		fseek(map->directory->mapFile, chunk_u->fileaddr + 36, SEEK_SET);
 		unsigned int u_addr = (unsigned int) ftell(map->directory->mapFile);
 		fwrite(&chunkaddr, sizeof(unsigned int), 1, map->directory->mapFile);
 		fseek(map->directory->mapFile, chunkaddr + 32, SEEK_SET);
 		fwrite(&u_addr, sizeof(unsigned int), 1, map->directory->mapFile);
-		cgeUnloadMapChunk(chunk_u);
+		cgeUnloadMapChunk(chunk_u, 0);
 	}
-	struct cgeMapChunk* chunk_d = cgeGetMapChunk(map, chunk->chunkPosX, chunk->chunkPosY, chunk->chunkPosZ - 1);
+	
+	struct cgeMapChunk* chunk_d = cgeGetMapChunk(map, chunk->chunkPosX, chunk->chunkPosY, chunk->chunkPosZ - 1, 0);
 	if(chunk_d) {
-		fseek(map->directory->mapFile, chunk_e->fileaddr + 32, SEEK_SET);
+		fseek(map->directory->mapFile, chunk_d->fileaddr + 32, SEEK_SET);
 		unsigned int d_addr = (unsigned int) ftell(map->directory->mapFile);
 		fwrite(&chunkaddr, sizeof(unsigned int), 1, map->directory->mapFile);
 		fseek(map->directory->mapFile, chunkaddr + 36, SEEK_SET);
 		fwrite(&d_addr, sizeof(unsigned int), 1, map->directory->mapFile);
-		cgeUnloadMapChunk(chunk_d);
+		cgeUnloadMapChunk(chunk_d, 0);
 	}
 
 	fflush(map->directory->mapFile);
 }
 
-void cgeUnloadMapChunk(struct cgeMapChunk* chunk) {
-	//TODO execute chunk exit scripts
-	
+void cgeUnloadMapChunk(struct cgeMapChunk* chunk, int load) {
+	if(load) {
+		//TODO execute chunk exit scripts
+		//TODO map unloading
+	}
+
 	free(chunk->tiles);
 	free(chunk);
 }

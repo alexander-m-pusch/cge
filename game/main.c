@@ -88,10 +88,11 @@ void testMapFeature() {
 	*/
 	struct cgeMap* map = cgeLoadMapByName(dir, "testMap");
 
-	//struct cgeMapChunk* newChunk = cgeCreateMapChunkFromScratch(0, 0, 0);
-	//cgePlaceMapChunk(map, newChunk);
+	//struct cgeMapChunk* newChunk = cgeCreateMapChunkFromScratch(1, 0, 0);
+	//cgePlaceMapChunk(map, newChunk); 
 	
-	struct cgeMapChunk* chunk = cgeGetMapChunk(map, 0, 0, 0);
+	struct cgeMapChunk* chunk = cgeGetMapChunk(map, 0, 0, 0, 1);
+	struct cgeMapChunk* chunk2 = cgeGetMapChunk(map, 1, 0, 0, 1);
 
 	printf("%p\n", (void*) chunk);
 }
